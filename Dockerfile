@@ -1,15 +1,18 @@
 # ---- Build Stage ----
 FROM node:18-alpine AS builder
 WORKDIR /app
-COPY package*.json ./
-COPY client/package*.json ./client/
-RUN npm install
+
+# Copy all files first
 COPY . .
-RUN npm run build
+
+# Install root + client deps and build
+RUN npm install
+RUN cd client && npm install && npm run build
 
 # ---- Production Stage ----
 FROM node:18-alpine
 WORKDIR /app
+
 ENV NODE_ENV=production
 ENV PORT=8080
 
